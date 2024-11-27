@@ -6,10 +6,10 @@ from twisted.conch.insults.insults import privateModes
 
 # OAuth 2.0 인증
 SCOPES = ["https://www.googleapis.com/auth/youtube.upload"]
-CLIENT_SECRETS_FILE = "client_secret.json"  # 다운로드한 클라이언트 파일
+DEFAULT_CLIENT_SECRETS_FILE = "client_secret.json"  # 기본 클라이언트 파일 경로
 
-def authenticate():
-    flow = InstalledAppFlow.from_client_secrets_file(CLIENT_SECRETS_FILE, SCOPES)
+def authenticate(client_secrets_file=DEFAULT_CLIENT_SECRETS_FILE):
+    flow = InstalledAppFlow.from_client_secrets_file(client_secrets_file, SCOPES)
     credentials = flow.run_console()
     return build("youtube", "v3", credentials=credentials)
 
@@ -37,9 +37,23 @@ def get_user_input(prompt, default):
     user_input = input(prompt)
     return user_input if user_input else default
 
+def get_client_secrets_file():
+    # 기본 경로 확인
+    if os.path.exists(DEFAULT_CLIENT_SECRETS_FILE):
+        return DEFAULT_CLIENT_SECRETS_FILE
+
+    print("Default client_secret.json not found.")
+    while True:
+        client_secrets_file = input("Enter the full path to your client_secret.json file: ")
+        if os.path.exists(client_secrets_file):
+            return client_secrets_file
+        else:
+            print("File not found. Please try again.")
+
 
 if __name__ == "__main__":
-    youtube = authenticate()
+    client_secrets_file = get_client_secrets_file()
+    youtube = authenticate(client_secrets_file)
 
     file = input("Enter the file path: ")
     if not os.path.isfile(file):
