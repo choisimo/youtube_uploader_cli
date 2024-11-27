@@ -20,7 +20,7 @@ def authenticate(client_secrets_file):
     print(f"URL saved to auth_url.txt: {auth_url}")
     print("Please copy and paste this URL into your browser.")
 
-    credentials = flow.run_console()  # 터미널에서 코드 입력
+    credentials = flow.run_local_server(port=0)  # 포트를 0으로 설정하면 사용 가능한 임의의 포트를 선택합니다.
     return build("youtube", "v3", credentials=credentials)
 
 
