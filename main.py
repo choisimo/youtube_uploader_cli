@@ -6,7 +6,7 @@ from twisted.conch.insults.insults import privateModes
 
 # OAuth 2.0 인증
 SCOPES = ["https://www.googleapis.com/auth/youtube.upload"]
-DEFAULT_CLIENT_SECRETS_FILE = "client_secret.json"  # 기본 클라이언트 파일 경로
+DEFAULT_CLIENT_SECRETS_FILE = "./client_secret.json"  # 기본 클라이언트 파일 경로
 
 
 def authenticate(client_secrets_file):
@@ -38,6 +38,7 @@ def get_user_input(prompt, default):
     user_input = input(prompt)
     return user_input if user_input else default
 
+
 def get_client_secrets_file():
     # 기본 경로 확인
     if os.path.exists(DEFAULT_CLIENT_SECRETS_FILE):
@@ -45,7 +46,14 @@ def get_client_secrets_file():
 
     print("Default client_secret.json not found.")
     while True:
-        client_secrets_file = input("Enter the full path to your client_secret.json file: ")
+        current_dir = os.getcwd()  # 현재 작업 디렉토리
+        suggested_path = os.path.join(current_dir, "client_secret.json")
+        client_secrets_file = input(
+            f"Enter the full path to your client_secret.json file (suggested: {suggested_path}): ")
+
+        if not client_secrets_file.strip():  # 입력이 비어 있으면 기본 경로 사용
+            client_secrets_file = suggested_path
+
         if os.path.exists(client_secrets_file):
             return client_secrets_file
         else:
