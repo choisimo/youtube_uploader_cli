@@ -11,8 +11,18 @@ DEFAULT_CLIENT_SECRETS_FILE = "./client_secret.json"  # 기본 클라이언트 �
 
 def authenticate(client_secrets_file):
     flow = InstalledAppFlow.from_client_secrets_file(client_secrets_file, SCOPES)
-    credentials = flow.run_local_server(port=0)  # 포트를 0으로 설정하면 사용 가능한 임의의 포트를 선택합니다.
+    auth_url, _ = flow.authorization_url()
+
+    # URL을 파일로 저장
+    with open("auth_url.txt", "w") as file:
+        file.write(f"Visit this URL to authorize: {auth_url}\n")
+
+    print(f"URL saved to auth_url.txt: {auth_url}")
+    print("Please copy and paste this URL into your browser.")
+
+    credentials = flow.run_console()  # 터미널에서 코드 입력
     return build("youtube", "v3", credentials=credentials)
+
 
 def upload_video(youtube, file, title, description, tags, category="22", status="unlisted"):
     request = youtube.videos().insert(
