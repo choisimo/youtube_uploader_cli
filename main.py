@@ -8,9 +8,10 @@ from twisted.conch.insults.insults import privateModes
 SCOPES = ["https://www.googleapis.com/auth/youtube.upload"]
 DEFAULT_CLIENT_SECRETS_FILE = "client_secret.json"  # 기본 클라이언트 파일 경로
 
-def authenticate(client_secrets_file=DEFAULT_CLIENT_SECRETS_FILE):
+
+def authenticate(client_secrets_file):
     flow = InstalledAppFlow.from_client_secrets_file(client_secrets_file, SCOPES)
-    credentials = flow.run_console()
+    credentials = flow.run_local_server(port=0)  # 포트를 0으로 설정하면 사용 가능한 임의의 포트를 선택합니다.
     return build("youtube", "v3", credentials=credentials)
 
 def upload_video(youtube, file, title, description, tags, category="22", status="unlisted"):
